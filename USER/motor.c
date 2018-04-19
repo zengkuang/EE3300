@@ -53,18 +53,21 @@ void TIM3_PWM_Config(void){
 
 	GPIO_InitTypeDef GPIO_InitStructure;     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);   //Open GPIOC Clock
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE); 
 //Connect TIM3 Pin to AF2
   GPIO_PinAFConfig(GPIOC,GPIO_PinSource6,GPIO_AF_TIM3);  //TIM3_Ch1
   GPIO_PinAFConfig(GPIOC,GPIO_PinSource7,GPIO_AF_TIM3);  //TIM3_Ch2
   GPIO_PinAFConfig(GPIOC,GPIO_PinSource8,GPIO_AF_TIM3);  //TIM3_Ch3
-  GPIO_PinAFConfig(GPIOC,GPIO_PinSource9,GPIO_AF_TIM3);  //TIM3_Ch4
+  GPIO_PinAFConfig(GPIOB,GPIO_PinSource1,GPIO_AF_TIM3);  //TIM3_Ch4
 // Config TIM3 Pin
-	GPIO_InitStructure.GPIO_Pin=(GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8|GPIO_Pin_9);
+	GPIO_InitStructure.GPIO_Pin=(GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_8);
 	GPIO_InitStructure.GPIO_Mode=GPIO_Mode_AF;
 	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP ;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);   //Open TIM3  Clock
