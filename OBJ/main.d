@@ -37,3 +37,12 @@
 ..\obj\main.o: LED.H
 ..\obj\main.o: timer.h
 ..\obj\main.o: motor.h
+..\obj\main.o: lcd_main.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+..\obj\main.o: encoder.h
+..\obj\main.o: ticks.h
+..\obj\main.o: stm32f4xx_it.h
+..\obj\main.o: chassis.h
+..\obj\main.o: usart.h
