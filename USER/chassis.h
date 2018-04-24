@@ -29,7 +29,7 @@ void go_backward(void);
 void go_left(void);
 void go_right(void);
 void chassis_init(void);
-void chassis_operation(pid_controller_t*,pid_controller_t*,pid_controller_t*,pid_controller_t*);
+void chassis_operation(pid_controller_t*,pid_controller_t*,pid_controller_t*,pid_controller_t*,int*);
 
 
 

@@ -22,6 +22,8 @@ void ticks_init(void);
 //Get the ticks passed since last seconds
 #define get_sub_ticks() (msTicks%1000)
 
+
+void waitms(uint16_t ms);
 //The following delay functions are not accurate
 
 //Generate a delay in us

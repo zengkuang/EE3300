@@ -1,9 +1,9 @@
 #include "usart.h"
 #include "stm32f4xx.h"
 
-int8_t  ReceiveBuff[RECEIVE_BUF_SIZE];   
+unsigned char  ReceiveBuff[RECEIVE_BUF_SIZE];   
 int16_t UART1_ReceiveSize = 0; 
-
+int channel[4];
 void USART1_INIT(void){
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -11,17 +11,20 @@ void USART1_INIT(void){
 	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2,ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_AHB1Periph_GPIOA , ENABLE);
+	
 	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_USART1); //GPIOA9USART1
   GPIO_PinAFConfig(GPIOA,GPIO_PinSource10,GPIO_AF_USART1); //GPIOA10
 
   
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9|GPIO_Pin_10 ; //
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 ; //
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;//
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
   GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+	GPIO_Init(GPIOA, &GPIO_InitStructure); 
 	
 	
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -35,16 +38,15 @@ void USART1_INIT(void){
 
 	
 	
-/*		
+
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;        
   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;  
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=3 ;  
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           
 	NVIC_Init(&NVIC_InitStructure); 
 	USART_ITConfig(USART1, USART_IT_IDLE, ENABLE); 
-	*/
-	USART_Cmd(USART1, ENABLE); 
 	
+	USART_Cmd(USART1, ENABLE); 
 	USART_DMACmd(USART1,USART_DMAReq_Rx,ENABLE);
 
 }
@@ -106,24 +108,56 @@ void DMA2_Stream5_IRQHandler(void)
   
 void USART1_IRQHandler(void)  
 {  
-    u16 data;  
+		
+    u16 rxdata;  
     if(USART_GetITStatus(USART1,USART_IT_IDLE) != RESET)  
     {  
-        DMA_Cmd(DMA2_Stream2, DISABLE); //??DMA,?????????  
-  
-        data = USART1->SR;  
-        data = USART1->DR;  
-          
+			
+				DMA_Cmd(DMA2_Stream2, DISABLE);            
         UART1_ReceiveSize =RECEIVE_BUF_SIZE - DMA_GetCurrDataCounter(DMA2_Stream2);  
+				if(ReceiveBuff[0] ==0xAA  && ReceiveBuff[1] ==0xAA && ReceiveBuff[6]==0x55 && ReceiveBuff[7] ==0x55){
+						if(ReceiveBuff[2] < 0x70){
+							channel[0] = ReceiveBuff[2];
+						}
+						else{
+							channel[0] = 0 - (256- ReceiveBuff[2]);
+						}
+						if(ReceiveBuff[3] < 0x70){
+							channel[1] = ReceiveBuff[3];
+						}
+						else{
+							channel[1] = 0 - (256- ReceiveBuff[3]);
+						}
+						if(ReceiveBuff[4] < 0x70){
+							channel[2] = ReceiveBuff[4];
+						}
+						else{
+							channel[2] = 0 - (256- ReceiveBuff[4]);
+						}
+						if(ReceiveBuff[5] < 0x70){
+							channel[3] = ReceiveBuff[5];
+						}
+						else{
+							channel[3] = 0 - (256- ReceiveBuff[5]);
+						}
+							
+				}
+			
+			
+			
+			
         if(UART1_ReceiveSize !=0)  
-        {  
-            /*
-					usart idle interrupt
-					*/
+        {    
+					GPIO_ResetBits(GPIOF,GPIO_Pin_9);//LED1_ON;
+					GPIO_ResetBits(GPIOF,GPIO_Pin_10);//LED2_ON 
         }  
+				else{
+					GPIO_SetBits(GPIOF,GPIO_Pin_9);//LED1_ON;
+					GPIO_SetBits(GPIOF,GPIO_Pin_10);//LED2_ON 
+
+				}
         DMA_ClearFlag(DMA2_Stream2,DMA_FLAG_TCIF5 | DMA_FLAG_FEIF5 | DMA_FLAG_DMEIF5 | DMA_FLAG_TEIF5 | DMA_FLAG_HTIF5);//??DMA2_Steam7??????  
         DMA_SetCurrDataCounter(DMA2_Stream2, RECEIVE_BUF_SIZE);  
-        DMA_Cmd(DMA2_Stream2, ENABLE);     //??DMA,  
-  
+        DMA_Cmd(DMA2_Stream2, ENABLE);      
     }  
 }

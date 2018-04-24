@@ -46,3 +46,5 @@
 ..\obj\main.o: stm32f4xx_it.h
 ..\obj\main.o: chassis.h
 ..\obj\main.o: usart.h
+..\obj\main.o: MPU6500_SPI.h
+..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h

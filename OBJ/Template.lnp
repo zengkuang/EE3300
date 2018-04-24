@@ -10,6 +10,8 @@
 "..\obj\ticks.o"
 "..\obj\chassis.o"
 "..\obj\usart.o"
+"..\obj\i2c_mpu6500.o"
+"..\obj\mpu6500_spi.o"
 "..\obj\startup_stm32f40_41xxx.o"
 "..\obj\misc.o"
 "..\obj\stm32f4xx_adc.o"

@@ -35,8 +35,8 @@ void chassis_init(){
 	chassis.pwm_signal[2] = 0;
 	chassis.pwm_signal[3] = 0;
 }
-void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_controller_t* pid3, pid_controller_t* pid4){
-	switch(chassis.mode){
+void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_controller_t* pid3, pid_controller_t* pid4,int* channel){
+	/*switch(chassis.mode){
 		case stop:{
 			chassis.vy = 0;
 			chassis.vx = 0;
@@ -63,7 +63,11 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		}break;
 		default:{
 		}break;
-	}
+	}*/
+		chassis.vx = channel[0]*5;
+		chassis.vy = channel[1]*5;
+		chassis.vw = channel[2]*2;
+		
 		chassis.speed_sp[0] = chassis.vy - chassis.vx + chassis.vw;
 		chassis.speed_sp[1] = chassis.vy + chassis.vx - chassis.vw;
 		chassis.speed_sp[2] = chassis.vy - chassis.vx - chassis.vw;
@@ -72,13 +76,6 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		encoder_2_update();
 		encoder_3_update();
 		encoder_4_update();
-		char str[20];
-		sprintf(str, "%d", pid1->I);
-		tft_prints(8,7,str);
-		sprintf(str, "%.1f", pid1->error_P);
-		tft_prints(8,5,str);
-		sprintf(str, "%.1f", pid1->error_I);
-		tft_prints(8,6,str);
 		chassis.pwm_signal[0] = chassis_controlSpeed(chassis.speed_sp[0],get_encoder_count(ENCODER_1),pid1);
 		chassis.pwm_signal[1] = chassis_controlSpeed(chassis.speed_sp[1],get_encoder_count(ENCODER_2),pid2);
 		chassis.pwm_signal[2] = chassis_controlSpeed(chassis.speed_sp[2],get_encoder_count(ENCODER_3),pid3);
@@ -95,6 +92,7 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		sprintf(str, "%.1f",chassis.speed_sp[3]);
 		tft_prints(8,8,str);
 		*/
+		/*
 		sprintf(str, "%d", chassis.pwm_signal[0]);
 		tft_prints(1,5,str);
 		sprintf(str, "%d", chassis.pwm_signal[1]);
@@ -103,7 +101,7 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		tft_prints(1,7,str);
 		sprintf(str, "%d",chassis.pwm_signal[3]);
 		tft_prints(1,8,str);
-	
+	*/
 		drive_motor(chassis.pwm_signal[0],chassis.pwm_signal[1],chassis.pwm_signal[2],chassis.pwm_signal[3]);
 }
 

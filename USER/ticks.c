@@ -26,7 +26,11 @@ void ticks_init() {
 	
 	msTicks = 0;
 }
+void waitms(uint16_t ms){
+	uint32_t n = get_ticks();
+	while(get_ticks() - n <ms);
 
+}
 void TICKS_IRQ_HANDLER(void){
 	if (TIM_GetITStatus(TICKS_TIM, TIM_IT_Update) != RESET){
 		msTicks++;
