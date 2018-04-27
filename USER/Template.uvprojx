@@ -400,11 +400,6 @@
               <FilePath>.\LED.C</FilePath>
             </File>
             <File>
-              <FileName>TIME_TEST.C</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\TIME_TEST.C</FilePath>
-            </File>
-            <File>
               <FileName>motor.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\motor.c</FilePath>
@@ -465,16 +460,6 @@
               <FilePath>.\usart.c</FilePath>
             </File>
             <File>
-              <FileName>I2C_MPU6500.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\I2C_MPU6500.c</FilePath>
-            </File>
-            <File>
-              <FileName>I2C_MPU6500.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\I2C_MPU6500.h</FilePath>
-            </File>
-            <File>
               <FileName>MPU6500_SPI.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\MPU6500_SPI.h</FilePath>
@@ -483,6 +468,26 @@
               <FileName>MPU6500_SPI.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\MPU6500_SPI.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\servo.h</FilePath>
+            </File>
+            <File>
+              <FileName>AHRS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\AHRS.c</FilePath>
+            </File>
+            <File>
+              <FileName>AHRS.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\AHRS.h</FilePath>
             </File>
           </Files>
         </Group>

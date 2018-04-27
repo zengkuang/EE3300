@@ -1,5 +1,6 @@
 #include "motor.h"
-void GPIO_Config(void){
+
+void motor_GPIO_Config(void){
 	GPIO_InitTypeDef  GPIO_InitStructure;
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_4 | GPIO_Pin_8 | GPIO_Pin_9;
@@ -8,7 +9,6 @@ void GPIO_Config(void){
   GPIO_InitStructure.GPIO_Speed =	GPIO_Speed_2MHz;
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_Init(GPIOB, &GPIO_InitStructure);
-	
 	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOG, ENABLE);
   GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
@@ -41,16 +41,12 @@ void GPIO_Config(void){
 	GPIO_ResetBits(GPIOB,GPIO_Pin_5);  
 	GPIO_SetBits(GPIOB,GPIO_Pin_6); 
 	GPIO_SetBits(GPIOB,GPIO_Pin_7);
-	
-	
 }
-
 static 	TIM_OCInitTypeDef TIM_OCInitStructure1;
 static 	TIM_OCInitTypeDef TIM_OCInitStructure2;
 static 	TIM_OCInitTypeDef TIM_OCInitStructure3;
 static 	TIM_OCInitTypeDef TIM_OCInitStructure4;
 void TIM3_PWM_Config(void){
-
 	GPIO_InitTypeDef GPIO_InitStructure;     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC,ENABLE);   //Open GPIOC Clock
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB,ENABLE); 
@@ -129,7 +125,6 @@ TIM3 Channel4 duty cycle=(TIM3_CCR4/ TIM3_ARR)*100=5000/20999
 	TIM_OC4Init(TIM3, &TIM_OCInitStructure4);
 
 	TIM_OC4PreloadConfig(TIM3, TIM_OCPreload_Enable);         // turn on oc4 preload 
-
 	TIM_ARRPreloadConfig(TIM3, ENABLE);
   /* TIM3 enable counter */
   TIM_Cmd(TIM3, ENABLE);
@@ -167,9 +162,8 @@ void drive_motor(int c6, int c7, int c8,int c9)
 		}
 		else{
 			GPIO_ResetBits(GPIOB,GPIO_Pin_4);  
-			GPIO_SetBits(GPIOG,GPIO_Pin_14);  	}
-		
-		
+			GPIO_SetBits(GPIOG,GPIO_Pin_14);
+		}
 		if(c9>=0){
 				GPIO_ResetBits(GPIOB,GPIO_Pin_5);  
 	GPIO_SetBits(GPIOB,GPIO_Pin_6); 

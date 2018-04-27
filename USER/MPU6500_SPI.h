@@ -44,11 +44,15 @@ typedef struct{
 	float accelData[3];
 	float _accel_psc;
   float _gyro_psc;
+	float gyro_offset[3];
+	int calibrated;
 }IMUInfo;
 
 
 void IMUGetDataRaw(IMUInfo* );
 void SPI_MPU6500_init(void);
 void mySPI_SendData(uint8_t address, uint8_t data);
+void calibrateGyro(IMUInfo* );
 uint8_t mySPI_GetData(uint8_t );
+void DataConverge(IMUInfo* );
 #endif

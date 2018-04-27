@@ -9,20 +9,14 @@
 #include "usart.h"
 #include "MPU6500_SPI.h"
 #include "math.h"
-#define M_PI 3.14159265358979323846
+#include "servo.h"
+#include "AHRS.h"
 #define KEY0 GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_4)   //PE4 PRESS - 0
 //#define KEY2 GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0)	//PA0  WK_UP PRESS - 1
 #define LED1_OFF GPIO_SetBits(GPIOF,GPIO_Pin_9);    //PF9
 #define LED1_ON GPIO_ResetBits(GPIOF,GPIO_Pin_9);   //PF9
 #define LED2_OFF GPIO_SetBits(GPIOF,GPIO_Pin_10);    //PF10
 #define LED2_ON GPIO_ResetBits(GPIOF,GPIO_Pin_10);   //PF10
-void Delayus(int duration);
-
-
-
-
-
-
 void Key_GPIO_Config(void)
 { 
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -51,7 +45,8 @@ int main(void)
 	pid_controller_t pid3;
 	pid_controller_t pid4;
 	IMUInfo mpu6500;
-	
+	int roll_value = 6200;
+	int pitch_value = 6200;
 	/*
 	PID Configuration
 	*/
@@ -83,7 +78,7 @@ int main(void)
 	int32_t time = 0;
 	int32_t time2 = 0;
 	TIM3_PWM_Config();
-	GPIO_Config();
+	motor_GPIO_Config();
 	Key_GPIO_Config();
 	encoder_1_init();
 	encoder_2_init();
@@ -100,115 +95,103 @@ int main(void)
 	USART1_INIT();
 	DMA_config();
 	SPI_MPU6500_init();
-	/*
-	I2C_MPU6500_init();
-	MPU6500_Init();
-	sprintf(str, "%d", I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_CONFIG));
-	tft_prints(5,5,str);
-	*/
-	/*
-	if(I2C_ByteRead(MPU6500_SLAVE_ADDRESS,0x75) == whoami){
-		tft_prints(0,0,"Connected");
-		tft_update();
-	}
-	else{
-		tft_prints(0,0,"not Connected");
-		tft_update();
-	}*/
-	 sprintf(str, "%d",mySPI_GetData(WHO_AM_I));
-	 tft_prints(0,0,str);
-	 tft_update();
+	calibrateGyro(&mpu6500);
+	servo_timer_config();
+	DataConverge(&mpu6500);
 while(1)
 {
 	
 	if(time != get_ticks()){
 		time = get_ticks();
 	}
-	if(time - time2 > 100){
-		IMUGetDataRaw(&mpu6500);
-
+	if(time - time2 > 20){
+		int start =  get_ticks();
+				
+		time2 = time;
+		//drive_motor(10000,15000,0,0);
+		chassis_operation(&pid1,&pid2,&pid3,&pid4,channel);
 		/*
-		BUF[0] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_XOUT_H);
-		BUF[1] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_XOUT_L);
-		Gyro_x = (BUF[0] << 8) | BUF[1];
-		
-		
-		BUF[2] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_YOUT_H);
-		BUF[3] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_YOUT_L);
-		Gyro_y = (BUF[2] << 8) | BUF[3];
-		
-		
-		BUF[4] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_ZOUT_H);
-		BUF[5] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,GYRO_ZOUT_L);
-		Gyro_z = (BUF[4] << 8) | BUF[5];
-		
-		BUF[6] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_XOUT_H);
-		BUF[7] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_XOUT_H);
-		A_x = (BUF[6] << 8) | BUF[7];
-		
-		BUF[8] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_YOUT_H);
-		BUF[9] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_YOUT_H);
-		A_y = (BUF[8] << 8) | BUF[9];
-		
-		BUF[10] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_ZOUT_H);
-		BUF[11] = I2C_ByteRead(MPU6500_SLAVE_ADDRESS,ACCEL_ZOUT_H);
-		A_z = (BUF[10] << 8) | BUF[11];
-		
-		
+		left y-axis larger to right  right x-axis larger to front
+		*/
+		/*
+		rpy[3] 0-roll 1-pitch 2-yaw
 		*/
 		
-		
-		
-		time2 = time;
-		chassis_operation(&pid1,&pid2,&pid3,&pid4,channel);
-	
-		sprintf(str, "%.4f", mpu6500.accelData[0]);
-		tft_prints(1,1,"      ");
-		tft_prints(1,1,str);
-		sprintf(str, "%.4f",  mpu6500.accelData[1]);
-		tft_prints(1,2,"      ");
-		tft_prints(1,2,str);
-		sprintf(str, "%.4f",  mpu6500.accelData[2]);
-		tft_prints(1,3,"      ");
-		tft_prints(1,3,str);
-		sprintf(str, "%.4f", mpu6500.gyroData[0]);
-		tft_prints(1,4,"      ");
-		tft_prints(1,4,str);
-		sprintf(str, "%.4f", mpu6500.gyroData[1]);
-		tft_prints(1,5,"      ");
-		tft_prints(1,5,str);
-		sprintf(str, "%.4f", mpu6500.gyroData[2]);
-		tft_prints(1,6,"      ");
-		tft_prints(1,6,str);
-		sprintf(str, "%d", get_seconds());
-		tft_prints(0,0,str);
+		IMUGetDataRaw(&mpu6500);
+		MadgwickAHRSupdateIMU(mpu6500.gyroData[0],mpu6500.gyroData[1],mpu6500.gyroData[2],\
+		mpu6500.accelData[0],mpu6500.accelData[1],mpu6500.accelData[2]);
+		getRollPitchYaw();
+		roll_value += (rpy[0] * 8);
+		pitch_value -= (rpy[1] * 8);
+		servo_change(roll_value ,pitch_value);
 		
 		/*
-		sprintf(str, "%d", get_encoder_count(ENCODER_4));
-		tft_prints(4,4,str);		
-		sprintf(str, "%d", get_seconds());
+		servo_change(6200,6200);
+		waitms(1000);
+		servo_change(6200,6400);
+		waitms(1000);
+		servo_change(6200,6600);
+		waitms(1000);
+		servo_change(6200,6400);
+		waitms(1000);
+		servo_change(6200,6200);
+		waitms(1000);
+		servo_change(6200,6000);
+		waitms(1000);
+		servo_change(6200,5800);
+		waitms(1000);
+		servo_change(6200,6000);
+		waitms(1000);
+		*/
+		
+    /*
+		sprintf(str, " %.4f",rpy[0]);
+		tft_prints(1,1,"      ");
+		tft_prints(1,1,str);
+		
+		sprintf(str, " %.4f",  rpy[1]);
+		tft_prints(1,2,"      ");
+		tft_prints(1,2,str);
+		*/
+		/*
+		sprintf(str, "%.4f",  rpy[2]);
+		tft_prints(1,3,"      ");
+		tft_prints(1,3,str);
+		*/
+		/*
+		sprintf(str, "roll : %.4f", mpu6500.accelData[0]);
+		tft_prints(1,1,"      ");
+		tft_prints(1,1,str);
+		sprintf(str, "pitch : %.4f",  mpu6500.accelData[1]);
+		tft_prints(1,2,"      ");
+		tft_prints(1,2,str);
+		sprintf(str, "yaw: %.4f",  mpu6500.accelData[2]);
+		tft_prints(1,3,"      ");
+		tft_prints(1,3,str);
+		*/
+/*
+		sprintf(str, "%.2f", mpu6500.gyroData[0]);
+		tft_prints(1,4,"      ");
+		tft_prints(1,4,str);
+		sprintf(str, "%.2f", mpu6500.gyroData[1]);
+		tft_prints(1,5,"      ");
+		tft_prints(1,5,str);
+		sprintf(str, "%.2f", mpu6500.gyroData[2]);
+		tft_prints(1,6,"      ");
+		tft_prints(1,6,str);
+	*/	
+		/*
+		sprintf(str, "%d", get_ticks() -start);
 		tft_prints(0,0,str);
 		*/
 		tft_update();
 		
-		
 		}
-	//_delay_ms(10);
 
 }
 }
 
 
-
-void Delayus(int duration)
-{
-		while(duration--) 
-		{
-			int i=0x02;				
-			while(i--)
-			__asm("nop");
-		}
-}
 
 
 

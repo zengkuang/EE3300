@@ -64,9 +64,9 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		default:{
 		}break;
 	}*/
-		chassis.vx = channel[0]*5;
-		chassis.vy = channel[1]*5;
-		chassis.vw = channel[2]*2;
+		chassis.vx = channel[0]*2;
+		chassis.vy = channel[1]*2;
+		chassis.vw = channel[2];
 		
 		chassis.speed_sp[0] = chassis.vy - chassis.vx + chassis.vw;
 		chassis.speed_sp[1] = chassis.vy + chassis.vx - chassis.vw;
@@ -81,8 +81,8 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		chassis.pwm_signal[2] = chassis_controlSpeed(chassis.speed_sp[2],get_encoder_count(ENCODER_3),pid3);
 		chassis.pwm_signal[3] = chassis_controlSpeed(chassis.speed_sp[3],get_encoder_count(ENCODER_4),pid4);
 
-	
-	/*	
+		char str[20];
+	/*
 		sprintf(str, "%.1f", chassis.speed_sp[0]);
 		tft_prints(8,5,str);
 		sprintf(str, "%.1f", chassis.speed_sp[1]);
@@ -91,8 +91,8 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		tft_prints(8,7,str);
 		sprintf(str, "%.1f",chassis.speed_sp[3]);
 		tft_prints(8,8,str);
-		*/
-		/*
+		
+		
 		sprintf(str, "%d", chassis.pwm_signal[0]);
 		tft_prints(1,5,str);
 		sprintf(str, "%d", chassis.pwm_signal[1]);

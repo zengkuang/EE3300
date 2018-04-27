@@ -48,3 +48,5 @@
 ..\obj\main.o: usart.h
 ..\obj\main.o: MPU6500_SPI.h
 ..\obj\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+..\obj\main.o: servo.h
+..\obj\main.o: AHRS.h

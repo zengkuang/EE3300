@@ -1,4 +1,5 @@
 #include "MPU6500_SPI.h"
+#include "AHRS.h"
 #include "ticks.h"
 
 int16_t Gyro_x = 0;
@@ -8,6 +9,7 @@ int16_t A_x = 0;
 int16_t A_y = 0;
 int16_t A_z = 0;
 uint8_t BUF[2];
+static float gyrox_offset, gyroy_offset, gyroz_offset;
 void SPI_GPIO_Configuration(void);
 void SPI_GPIO_Configuration(){
 	GPIO_InitTypeDef GPIO_InitStruct;
@@ -129,6 +131,8 @@ void IMUGetDataRaw(IMUInfo* imu){
 		BUF[0] = mySPI_GetData(ACCEL_ZOUT_H);
 		BUF[1] = mySPI_GetData(ACCEL_ZOUT_L);
 		A_z = (BUF[0] << 8) | BUF[1]; 
+		
+		if(imu->calibrated == 0){
 		/* Accel X*/
 		imu->accelData[0] = (float)A_x * imu->_accel_psc;
 		/* Accel Y*/
@@ -140,11 +144,52 @@ void IMUGetDataRaw(IMUInfo* imu){
 		/* Gyro Y*/
 		imu->gyroData[1] = (float)Gyro_y * imu->_gyro_psc;
 		/* Gyro Z*/
-		imu->gyroData[2] = (float)Gyro_z * imu->_gyro_psc;
-		
-		
+		imu->gyroData[2] = (float)Gyro_z * imu->_gyro_psc ;
+		}
+		else{
+						/* Accel X*/
+			imu->accelData[0] = (float)A_x * imu->_accel_psc;
+			/* Accel Y*/
+			imu->accelData[1] = (float)A_y * imu->_accel_psc;
+			/* Accel Z*/
+			imu->accelData[2] = (float)A_z * imu->_accel_psc;
+			/* Gyro X*/
+			imu->gyroData[0] = (float)Gyro_x * imu->_gyro_psc - imu->gyro_offset[0];
+			/* Gyro Y*/
+			imu->gyroData[1] = (float)Gyro_y * imu->_gyro_psc - imu->gyro_offset[1];
+			/* Gyro Z*/
+			imu->gyroData[2] = (float)Gyro_z * imu->_gyro_psc - imu->gyro_offset[2];
+		}
 }
+void calibrateGyro(IMUInfo* imu){
+	    
+    int loops = 1500;
+    //float InitGyroData[3];
 
+    for (int i = 0; i < loops; i++)
+    {
+				
+				IMUGetDataRaw(imu);
+        gyrox_offset  += imu->gyroData[0];
+        gyroy_offset += imu->gyroData[1];
+        gyroz_offset   += imu->gyroData[2];
+    }
+
+    imu->gyro_offset[0]  = gyrox_offset/(loops);
+    imu->gyro_offset[1] = gyroy_offset/(loops);
+    imu->gyro_offset[2]  = gyroz_offset/(loops);
+		imu->calibrated = 1;
+
+} 
+
+void DataConverge(IMUInfo* imu){
+	
+	for(int i=0; i<15000;i++){
+		IMUGetDataRaw(imu);	
+		MadgwickAHRSupdateIMU(imu->gyroData[0],imu->gyroData[1],imu->gyroData[2],\
+			imu->accelData[0],imu->accelData[1],imu->accelData[2]);
+	}
+}
 
 
 
