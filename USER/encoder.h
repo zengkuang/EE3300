@@ -4,13 +4,6 @@
 #include "stm32f4xx.h"
 #include "stm32f4xx_tim.h"
 
-/**
-* This library handles encoder count with interrupt to count beyond 65535
-* Note that this library is poorly written (by me) so you also need to change the interrupt handler if you want to change to another timer
-*
-* Rex Cheng
-*/
-
 #define ENCODER_COUNT 4
 //ENCODER 1 configuration
 #define ENCODER1_TIMER										TIM4
@@ -73,9 +66,7 @@
 #define ENCODER4_GPIO_PINSOURCE2          GPIO_PinSource3
 #define ENCODER4_MODE											GPIO_PuPd_UP
 
-//Using non-interrupt mode might reduce interference from noise
-//but the user is respondible for calling encoder_2_update() such that the count wouldn't exceed 32767 in each interval.
-#define ENCODER_USES_INTERRUPT_MODE false
+
 
 typedef enum{
 	ENCODER_1 = 0, 

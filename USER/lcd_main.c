@@ -31,7 +31,7 @@ void tft_spi_init(void){
    SPI_InitTypeDef   	SPI_InitStructure;
    GPIO_InitTypeDef 	GPIO_InitStructure;
    
-   //Clock and Pins mapping to SPI2
+   //Clock and Pins mapping to SPI1
    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1,ENABLE);
    RCC_APB2PeriphClockLPModeCmd(RCC_APB2Periph_SPI1,ENABLE);

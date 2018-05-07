@@ -2,7 +2,7 @@
 #include "encoder.h"
 #include "motor.h"
 #include "lcd_main.h"
-
+#include "AHRS.h"
 
 chassisStruct chassis;
 static inline float boundOutput(const float input, const float max)
@@ -24,9 +24,22 @@ static int16_t chassis_controlSpeed(int speed_sp, int speed, pid_controller_t* c
   controller->I += error;  //KI
   controller->I = boundOutput(controller->I, 40000);  
   float output = error* controller->error_P + controller->I * controller->error_I; 
-	//float output = 0;
   return (int16_t)(boundOutput(output,OUTPUT_MAX)); 
 } 
+
+static int16_t chassis_heading_control(pid_controller_t* controller,float get, float set){ 
+  controller->error[0] = set - get; 
+  float output = controller->error[0]*controller->error_P+controller->error_D*(controller->error[0]-2*controller->error[1]+controller->error[2]); 
+  controller->error[1] = controller->error[0]; 
+  controller->error[2] = controller->error[1]; 
+ 
+  return output; 
+ 
+} 
+
+
+
+
 
 void chassis_init(){
 
@@ -35,39 +48,15 @@ void chassis_init(){
 	chassis.pwm_signal[2] = 0;
 	chassis.pwm_signal[3] = 0;
 }
-void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_controller_t* pid3, pid_controller_t* pid4,int* channel){
-	/*switch(chassis.mode){
-		case stop:{
-			chassis.vy = 0;
-			chassis.vx = 0;
-			chassis.vw = 0;
-		}break;
-		case forward:{
-			
-			chassis.vy = 100;
-			chassis.vx = 0;
-			chassis.vw = 0;
-		}break;
-		case backward:{
-			chassis.vy = -100;
-			chassis.vx = 0;
-			chassis.vw = 0;
-		}break;
-		case left:{
-		}break;
-		case right:{
-		}break;
-		case rotate_left:{
-		}break;
-		case rotate_right:{
-		}break;
-		default:{
-		}break;
-	}*/
-		chassis.vx = channel[0]*2;
-		chassis.vy = channel[1]*2;
-		chassis.vw = channel[2];
-		
+void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_controller_t* pid3, pid_controller_t* pid4, pid_controller_t* heading,int* channel){
+		chassis.vx = channel[0];
+		chassis.vy = channel[1];
+		if(channel[2] >10 || channel[2] <-10){
+			chassis.vw = channel[2];
+		}
+		else{
+			chassis.vw = chassis_heading_control(heading,rpy[2], chassis.heading_sp);
+		}
 		chassis.speed_sp[0] = chassis.vy - chassis.vx + chassis.vw;
 		chassis.speed_sp[1] = chassis.vy + chassis.vx - chassis.vw;
 		chassis.speed_sp[2] = chassis.vy - chassis.vx - chassis.vw;
@@ -82,26 +71,6 @@ void chassis_operation(pid_controller_t* pid1,pid_controller_t* pid2,pid_control
 		chassis.pwm_signal[3] = chassis_controlSpeed(chassis.speed_sp[3],get_encoder_count(ENCODER_4),pid4);
 
 		char str[20];
-	/*
-		sprintf(str, "%.1f", chassis.speed_sp[0]);
-		tft_prints(8,5,str);
-		sprintf(str, "%.1f", chassis.speed_sp[1]);
-		tft_prints(8,6,str);
-		sprintf(str, "%.1f", chassis.speed_sp[2]);
-		tft_prints(8,7,str);
-		sprintf(str, "%.1f",chassis.speed_sp[3]);
-		tft_prints(8,8,str);
-		
-		
-		sprintf(str, "%d", chassis.pwm_signal[0]);
-		tft_prints(1,5,str);
-		sprintf(str, "%d", chassis.pwm_signal[1]);
-		tft_prints(1,6,str);
-		sprintf(str, "%d", chassis.pwm_signal[2]);
-		tft_prints(1,7,str);
-		sprintf(str, "%d",chassis.pwm_signal[3]);
-		tft_prints(1,8,str);
-	*/
 		drive_motor(chassis.pwm_signal[0],chassis.pwm_signal[1],chassis.pwm_signal[2],chassis.pwm_signal[3]);
 }
 

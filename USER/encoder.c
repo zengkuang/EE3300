@@ -1,10 +1,7 @@
 #include "encoder.h"
 
-#if ENCODER_USES_INTERRUPT_MODE
-	static volatile s16 loopCountEnc2 = 0;
-#else
-	static volatile s32 enc2Count = 0;
-#endif
+
+static volatile s32 enc2Count = 0;
 static volatile s32 enc1Count = 0; 
 static volatile s32 enc3Count = 0; 
 static volatile s32 enc4Count = 0; 
@@ -221,28 +218,14 @@ void ENCODER1_IRQ_HANDLER(){
 	}
 }
 
-#if ENCODER_USES_INTERRUPT_MODE
-	//Handler for encoder 2
-	void ENCODER2_IRQ_HANDLER(){
-		if (TIM_GetITStatus(ENCODER2_TIMER, TIM_IT_Update) != RESET){
-			TIM_ClearITPendingBit(ENCODER2_TIMER, TIM_IT_Update);
-			if (TIM_GetCounter(ENCODER2_TIMER) < 32768){
-				//Overflow
-				loopCountEnc2++;
-			}else{
-				//Underflow
-				loopCountEnc2--;
-			}
-		}
-	}
-#else
-	//Manually update the encoder count without using interrupt
-	void encoder_2_update(){
+
+//Manually update the encoder count without using interrupt
+void encoder_2_update(){
 		s16 cnt = (s16) TIM_GetCounter(ENCODER2_TIMER);
 		enc2Count = cnt;
 		TIM_SetCounter(ENCODER2_TIMER, 0);
 	}
-#endif
+
 
 void encoder_1_update(){
 		s16 cnt = (s16) TIM_GetCounter(ENCODER1_TIMER);
@@ -285,11 +268,7 @@ void reset_encoder(EncoderID id){
 	if (id == ENCODER_1){
 		enc1Count = 0;
 	}else{
-		#if ENCODER_USES_INTERRUPT_MODE
-			loopCountEnc2 = 0;
-		#else
-			enc2Count = 0;
-		#endif
+		enc2Count = 0;
 		TIM_SetCounter(ENCODER2_TIMER, 0);
 	}
 }

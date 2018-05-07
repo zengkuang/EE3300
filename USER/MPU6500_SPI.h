@@ -1,15 +1,6 @@
 #ifndef _MPU6500_SPI_H_
 #define _MPU6500_SPI_H_
 #include "stm32f4xx.h"
-
-#define I2C_MPU6500  I2C2
-#define I2C_MPU6500_CLK RCC_APB1Periph_I2C2
-#define I2C_MPU6500_GPIO GPIOB
-#define I2C_MPU6500_GPIO_CLK RCC_AHB1Periph_GPIOB
-#define I2C_MPU6500_SCL GPIO_Pin_10
-#define I2C_MPU6500_SDA GPIO_Pin_11
-#define I2C_SCL_PINSOURCE          GPIO_PinSource10
-#define I2C_SDA_PINSOURCE          GPIO_PinSource11
 #define MPU6500_SLAVE_ADDRESS 0x68
 #define whoami 0x70
 

@@ -415,6 +415,11 @@
               <FilePath>.\lcd_main.c</FilePath>
             </File>
             <File>
+              <FileName>chassis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\chassis.c</FilePath>
+            </File>
+            <File>
               <FileName>encoder.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\encoder.h</FilePath>
@@ -438,11 +443,6 @@
               <FileName>ticks.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\ticks.h</FilePath>
-            </File>
-            <File>
-              <FileName>chassis.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\chassis.c</FilePath>
             </File>
             <File>
               <FileName>chassis.h</FileName>

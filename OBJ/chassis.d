@@ -41,3 +41,4 @@
 ..\obj\chassis.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 ..\obj\chassis.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 ..\obj\chassis.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
+..\obj\chassis.o: AHRS.h

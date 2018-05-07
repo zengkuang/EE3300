@@ -54,31 +54,24 @@ void USART1_INIT(void){
 void DMA_config(void){
 		DMA_InitTypeDef  DMA_InitStructure; 
 		NVIC_InitTypeDef NVIC_InitStructure; 
-    DMA_InitStructure.DMA_Channel = DMA_Channel_4;  //????  
+    DMA_InitStructure.DMA_Channel = DMA_Channel_4;   
 	  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)&USART1->DR;//DMA????  
-    DMA_InitStructure.DMA_Memory0BaseAddr = (u32)ReceiveBuff;//DMA ???0??  
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory ;//????????  
-    DMA_InitStructure.DMA_BufferSize = RECEIVE_BUF_SIZE;//?????   
-    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//???????  
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//???????  
-    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;//??????:8?  
-    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;//???????:8?  // ??????   
-    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;//?????  
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)&USART1->DR; 
+    DMA_InitStructure.DMA_Memory0BaseAddr = (u32)ReceiveBuff;  
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory ;  
+    DMA_InitStructure.DMA_BufferSize = RECEIVE_BUF_SIZE;   
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable; 
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable; 
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; 
+    DMA_InitStructure.DMA_Priority = DMA_Priority_Medium; 
     DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable;           
     DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_Full;  
-    DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//?????????  
-    DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//????????  
-    DMA_Init(DMA2_Stream2, &DMA_InitStructure);//???DMA Stream  
-    //DMA NVIC  
-/*  
-    NVIC_InitStructure.NVIC_IRQChannel = DMA2_Stream5_IRQn;    
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;    
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;    
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;    
-    NVIC_Init(&NVIC_InitStructure);   
-*/		
-    DMA_Cmd(DMA2_Stream2, ENABLE);  //??DMA?? 
+    DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single; 
+    DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single; 
+    DMA_Init(DMA2_Stream2, &DMA_InitStructure);
+
+    DMA_Cmd(DMA2_Stream2, ENABLE);  
 		
       
     //DMA_ITConfig(DMA2_Stream5,DMA_IT_TC,ENABLE); 
@@ -87,11 +80,10 @@ void DMA_config(void){
 
 void DMA2_Stream5_IRQHandler(void)  
 {  
-    //????  
-    if(DMA_GetFlagStatus(DMA2_Stream5,DMA_FLAG_TCIF5)!=RESET)//??DMA2_Steam7????  
+    
+    if(DMA_GetFlagStatus(DMA2_Stream5,DMA_FLAG_TCIF5)!=RESET)  
     {   
-        DMA_Cmd(DMA2_Stream5, DISABLE); //??DMA,?????????  
-  
+        DMA_Cmd(DMA2_Stream5, DISABLE); 
         UART1_ReceiveSize =RECEIVE_BUF_SIZE - DMA_GetCurrDataCounter(DMA2_Stream5);  
         if(UART1_ReceiveSize !=0)  
         {  
@@ -102,7 +94,7 @@ void DMA2_Stream5_IRQHandler(void)
           
         DMA_ClearFlag(DMA2_Stream5,DMA_FLAG_TCIF5 | DMA_FLAG_FEIF5 | DMA_FLAG_DMEIF5 | DMA_FLAG_TEIF5 | DMA_FLAG_HTIF5);//??DMA2_Steam7??????  
         DMA_SetCurrDataCounter(DMA2_Stream5, RECEIVE_BUF_SIZE);  
-        DMA_Cmd(DMA2_Stream5, ENABLE);     //??DMA,  
+        DMA_Cmd(DMA2_Stream5, ENABLE);   
     }  
 }  
   
@@ -154,9 +146,8 @@ void USART1_IRQHandler(void)
 				else{
 					GPIO_SetBits(GPIOF,GPIO_Pin_9);//LED1_ON;
 					GPIO_SetBits(GPIOF,GPIO_Pin_10);//LED2_ON 
-
 				}
-        DMA_ClearFlag(DMA2_Stream2,DMA_FLAG_TCIF5 | DMA_FLAG_FEIF5 | DMA_FLAG_DMEIF5 | DMA_FLAG_TEIF5 | DMA_FLAG_HTIF5);//??DMA2_Steam7??????  
+        DMA_ClearFlag(DMA2_Stream2,DMA_FLAG_TCIF5 | DMA_FLAG_FEIF5 | DMA_FLAG_DMEIF5 | DMA_FLAG_TEIF5 | DMA_FLAG_HTIF5);
         DMA_SetCurrDataCounter(DMA2_Stream2, RECEIVE_BUF_SIZE);  
         DMA_Cmd(DMA2_Stream2, ENABLE);      
     }  

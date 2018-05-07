@@ -2,6 +2,8 @@ typedef struct{
 	int I;
 	float error_P;
   float error_I;
+	float error_D;
+	float error[3];
 }pid_controller_t;
 
 typedef enum{
@@ -19,6 +21,7 @@ typedef struct{
 	float vy;
 	float vw;
 	
+	float heading_sp;
 	float speed_sp[4];
 	int pwm_signal[4];
 	chassis_mode mode;
@@ -29,7 +32,7 @@ void go_backward(void);
 void go_left(void);
 void go_right(void);
 void chassis_init(void);
-void chassis_operation(pid_controller_t*,pid_controller_t*,pid_controller_t*,pid_controller_t*,int*);
+void chassis_operation(pid_controller_t*,pid_controller_t*,pid_controller_t*,pid_controller_t*,pid_controller_t*,int*);
 
 
 

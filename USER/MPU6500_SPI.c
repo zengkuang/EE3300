@@ -15,7 +15,7 @@ void SPI_GPIO_Configuration(){
 	GPIO_InitTypeDef GPIO_InitStruct;
 	/*-------- Configuring SCK, MISO, MOSI --------*/
 	 
-	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12;
+	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12; //SCL
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AF;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStruct.GPIO_OType = GPIO_OType_PP;

@@ -159,15 +159,12 @@ void SysTick_Handler(void)
 /*void PPP_IRQHandler(void)
 {
 }*/
-/*TIM3中断服务函省*/
 void TIM3_IRQHandler(void)   
 {
-	 /*检查指定的TIM中断发生与否*/
+
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) 
 		{
-			 /*清除TIMx的中断待处理位*/
-		TIM_ClearITPendingBit(TIM3, TIM_IT_Update  ); 
-			/*控制LED的IO翻转*/
+		TIM_ClearITPendingBit(TIM3, TIM_IT_Update); 
     GPIO_WriteBit(GPIOF, GPIO_Pin_9, (BitAction)(1-(GPIO_ReadOutputDataBit(GPIOF, GPIO_Pin_9))));
 			   GPIO_WriteBit(GPIOF, GPIO_Pin_10, (BitAction)(1-(GPIO_ReadOutputDataBit(GPIOF, GPIO_Pin_10))));
 		}
